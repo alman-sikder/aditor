@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aditor – AI Video Generation Directory</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo">
+      <img src="logo.svg" alt="Aditor Logo" />
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link active">📋 Directory</a>
+      <a href="editor.html" class="nav-link">✂️ Editor</a>
+      <a href="chatbot.html" class="nav-link">🤖 AI Chat</a>
+      <a href="contact.html" class="nav-link">📬 Contact</a>
+    </div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">☰</button>
+  </nav>
+  <div class="nav-mobile-menu" id="navMobileMenu">
+    <a href="index.html" class="nav-link active">📋 Directory</a>
+    <a href="editor.html" class="nav-link">✂️ Editor</a>
+    <a href="chatbot.html" class="nav-link">🤖 AI Chat</a>
+    <a href="contact.html" class="nav-link">📬 Contact</a>
+  </div>
+
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <img src="logo.svg" alt="Aditor" class="header-logo" />
+      </div>
+      <p class="tagline">The most comprehensive directory of AI video generation models</p>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search models, features, companies…" />
+        <span class="search-icon">🔍</span>
+      </div>
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="text-to-video">Text-to-Video</button>
+        <button class="filter-btn" data-filter="image-to-video">Image-to-Video</button>
+        <button class="filter-btn" data-filter="video-to-video">Video-to-Video</button>
+        <button class="filter-btn" data-filter="open-source">Open Source</button>
+        <button class="filter-btn" data-filter="free">Free Tier</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="stats-bar">
+      <div class="stat"><span class="stat-num" id="totalCount">0</span><span class="stat-label">Models Listed</span></div>
+      <div class="stat"><span class="stat-num">2026</span><span class="stat-label">Updated</span></div>
+      <div class="stat"><span class="stat-num">12+</span><span class="stat-label">Companies</span></div>
+    </section>
+
+    <div class="info-banner">
+      ℹ️ <strong>Note:</strong> "Visit Website" links open the official model websites in a new tab. An internet connection is required to access them.
+    </div>
+
+    <div class="cards-grid" id="cardsGrid"></div>
+  </main>
+
+  <footer>
+    <div class="footer-logo-row">
+      <img src="logo.svg" alt="Aditor" class="footer-logo" />
+    </div>
+    <div class="footer-links">
+      <a href="index.html">📋 Directory</a>
+      <a href="editor.html">✂️ Editor</a>
+      <a href="chatbot.html">🤖 AI Chat</a>
+      <a href="contact.html">📬 Contact</a>
+    </div>
+    <p>© 2026 Aditor by <a href="contact.html" style="color:var(--text-dim)">Alman Sikder</a> · Data accurate as of March 2026 · Not affiliated with any listed company · Free & Open Source</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('navHamburger').addEventListener('click', () => {
+      document.getElementById('navMobileMenu').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

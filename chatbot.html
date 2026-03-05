@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chat – Aditor</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="chatbot.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><img src="logo.svg" alt="Aditor Logo" /></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">📋 Directory</a>
+      <a href="editor.html" class="nav-link">✂️ Editor</a>
+      <a href="chatbot.html" class="nav-link active">🤖 AI Chat</a>
+      <a href="contact.html" class="nav-link">📬 Contact</a>
+    </div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">☰</button>
+  </nav>
+  <div class="nav-mobile-menu" id="navMobileMenu">
+    <a href="index.html" class="nav-link">📋 Directory</a>
+    <a href="editor.html" class="nav-link">✂️ Editor</a>
+    <a href="chatbot.html" class="nav-link active">🤖 AI Chat</a>
+    <a href="contact.html" class="nav-link">📬 Contact</a>
+  </div>
+
+  <div class="chatbot-page">
+    <div class="chatbot-sidebar">
+      <h2 class="sidebar-title">🤖 AI Assistant</h2>
+      <p class="sidebar-desc">Ask me anything about AI video generation models, features, pricing, or how to get started.</p>
+      <div class="sidebar-topics">
+        <p class="topics-label">Quick Questions</p>
+        <button class="topic-btn" data-q="What is the best free AI video generator?">🆓 Best free model?</button>
+        <button class="topic-btn" data-q="Which AI video models are open source?">🔓 Open source models?</button>
+        <button class="topic-btn" data-q="What is Sora and how does it work?">🎬 What is Sora?</button>
+        <button class="topic-btn" data-q="Which model generates the longest videos?">⏱️ Longest video duration?</button>
+        <button class="topic-btn" data-q="What is the difference between text-to-video and image-to-video?">📝 Text vs Image-to-Video?</button>
+        <button class="topic-btn" data-q="Which AI video model has the best quality?">🏆 Best quality model?</button>
+        <button class="topic-btn" data-q="How do I get started with AI video generation?">🚀 How to get started?</button>
+        <button class="topic-btn" data-q="Which models support 4K resolution?">📐 4K resolution models?</button>
+      </div>
+      <div class="sidebar-info">
+        <p>💡 This chatbot uses a built-in knowledge base about AI video models — no API key needed, works 100% offline.</p>
+      </div>
+    </div>
+
+    <div class="chatbot-main">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg bot">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">
+            <p>Hi! I'm your AI Video Generation assistant. I know everything about the models listed in this directory — Sora, Kling, Runway, Veo 2, and more.</p>
+            <p style="margin-top:8px">Ask me anything, or pick a quick question from the sidebar! 👈</p>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask about AI video models…" autocomplete="off" />
+        <button id="chatSend" class="chat-send-btn">Send ➤</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo-row"><img src="logo.svg" alt="Aditor" class="footer-logo" /></div>
+    <div class="footer-links">
+      <a href="index.html">📋 Directory</a>
+      <a href="editor.html">✂️ Editor</a>
+      <a href="chatbot.html">🤖 AI Chat</a>
+      <a href="contact.html">📬 Contact</a>
+    </div>
+    <p>© 2026 Aditor by <a href="contact.html" style="color:var(--text-dim)">Alman Sikder</a> · Free & Open Source</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="chatbot.js"></script>
+  <script>
+    document.getElementById('navHamburger').addEventListener('click', () => {
+      document.getElementById('navMobileMenu').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aditor – Browser Video Editor</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="editor.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><img src="logo.svg" alt="Aditor Logo" /></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">📋 Directory</a>
+      <a href="editor.html" class="nav-link active">✂️ Editor</a>
+      <a href="chatbot.html" class="nav-link">🤖 AI Chat</a>
+      <a href="contact.html" class="nav-link">📬 Contact</a>
+    </div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">☰</button>
+  </nav>
+  <div class="nav-mobile-menu" id="navMobileMenu">
+    <a href="index.html" class="nav-link">📋 Directory</a>
+    <a href="editor.html" class="nav-link active">✂️ Editor</a>
+    <a href="chatbot.html" class="nav-link">🤖 AI Chat</a>
+    <a href="contact.html" class="nav-link">📬 Contact</a>
+  </div>
+
+  <div class="editor-page">
+
+    <!-- Page Header -->
+    <div class="editor-header">
+      <h1>✂️ Aditor — Browser Video Editor</h1>
+      <p>Trim, filter, add text overlays, adjust speed, flip, rotate, and export — all in your browser. No uploads, no accounts, 100% free & private.</p>
+    </div>
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">🎬</div>
+      <p class="upload-title">Drop a video file here</p>
+      <p class="upload-sub">or click to browse · MP4, WebM, MOV, AVI supported</p>
+      <input type="file" id="fileInput" accept="video/*" hidden />
+      <button class="upload-btn" id="uploadBtn">Choose Video File</button>
+    </div>
+
+    <!-- Editor Workspace (hidden until file loaded) -->
+    <div class="editor-workspace" id="editorWorkspace" style="display:none">
+
+      <!-- Preview Panel -->
+      <div class="preview-panel">
+        <div class="video-container" id="videoContainer">
+          <video id="videoPreview" controls></video>
+        </div>
+        <div class="video-info" id="videoInfo"></div>
+
+        <!-- Timeline / Trim -->
+        <div class="timeline-section">
+          <h3 class="section-title">✂️ Trim Video</h3>
+          <div class="trim-controls">
+            <div class="trim-field">
+              <label>Start (s)</label>
+              <input type="number" id="trimStart" value="0" min="0" step="0.1" />
+            </div>
+            <div class="trim-field">
+              <label>End (s)</label>
+              <input type="number" id="trimEnd" value="0" min="0" step="0.1" />
+            </div>
+            <button class="action-btn" id="previewTrimBtn">▶ Preview Trim</button>
+            <button class="action-btn" id="resetTrimBtn">↺ Reset</button>
+          </div>
+          <div class="trim-bar-wrap">
+            <div class="trim-bar" id="trimBar">
+              <div class="trim-handle left" id="trimLeft"></div>
+              <div class="trim-range" id="trimRange"></div>
+              <div class="trim-handle right" id="trimRight"></div>
+              <div class="trim-playhead" id="trimPlayhead"></div>
+            </div>
+          </div>
+          <div class="trim-time-labels" id="trimTimeLabels"></div>
+        </div>
+      </div>
+
+      <!-- Controls Panel -->
+      <div class="controls-panel">
+
+        <!-- Filters -->
+        <div class="control-section">
+          <h3 class="section-title">🎨 Filters</h3>
+          <div class="filter-grid">
+            <button class="filter-preset active" data-filter="none">Original</button>
+            <button class="filter-preset" data-filter="grayscale(100%)">B&W</button>
+            <button class="filter-preset" data-filter="sepia(100%)">Sepia</button>
+            <button class="filter-preset" data-filter="invert(100%)">Invert</button>
+            <button class="filter-preset" data-filter="hue-rotate(90deg)">Hue+</button>
+            <button class="filter-preset" data-filter="saturate(200%)">Vivid</button>
+            <button class="filter-preset" data-filter="contrast(150%)">Hi-Con</button>
+            <button class="filter-preset" data-filter="brightness(130%)">Bright</button>
+            <button class="filter-preset" data-filter="blur(2px)">Blur</button>
+            <button class="filter-preset" data-filter="drop-shadow(4px 4px 8px #7c3aed)">Glow</button>
+            <button class="filter-preset" data-filter="saturate(0%) brightness(110%) contrast(120%)">Matte</button>
+            <button class="filter-preset" data-filter="hue-rotate(180deg) saturate(150%)">Neon</button>
+          </div>
+        </div>
+
+        <!-- Manual Adjustments -->
+        <div class="control-section">
+          <h3 class="section-title">🔧 Adjustments</h3>
+          <div class="sliders">
+            <div class="slider-row">
+              <label>Brightness <span id="brightnessVal">100</span>%</label>
+              <input type="range" id="brightness" min="0" max="200" value="100" />
+            </div>
+            <div class="slider-row">
+              <label>Contrast <span id="contrastVal">100</span>%</label>
+              <input type="range" id="contrast" min="0" max="200" value="100" />
+            </div>
+            <div class="slider-row">
+              <label>Saturation <span id="saturationVal">100</span>%</label>
+              <input type="range" id="saturation" min="0" max="300" value="100" />
+            </div>
+            <div class="slider-row">
+              <label>Hue Rotate <span id="hueVal">0</span>°</label>
+              <input type="range" id="hue" min="0" max="360" value="0" />
+            </div>
+            <div class="slider-row">
+              <label>Blur <span id="blurVal">0</span>px</label>
+              <input type="range" id="blur" min="0" max="10" value="0" step="0.5" />
+            </div>
+            <div class="slider-row">
+              <label>Opacity <span id="opacityVal">100</span>%</label>
+              <input type="range" id="opacity" min="0" max="100" value="100" />
+            </div>
+            <div class="slider-row">
+              <label>Sharpness <span id="sharpnessVal">0</span></label>
+              <input type="range" id="sharpness" min="0" max="5" value="0" step="0.5" />
+            </div>
+          </div>
+          <button class="reset-btn" id="resetFilters">↺ Reset All Adjustments</button>
+        </div>
+
+        <!-- Transform -->
+        <div class="control-section">
+          <h3 class="section-title">🔄 Transform</h3>
+          <div class="transform-btns">
+            <button class="transform-btn" id="flipH" title="Flip Horizontal">↔ Flip H</button>
+            <button class="transform-btn" id="flipV" title="Flip Vertical">↕ Flip V</button>
+            <button class="transform-btn" id="rotate90" title="Rotate 90°">↻ 90°</button>
+            <button class="transform-btn" id="rotate180" title="Rotate 180°">↻ 180°</button>
+            <button class="transform-btn" id="resetTransform" title="Reset Transform">↺ Reset</button>
+          </div>
+          <div class="aspect-row">
+            <label>Aspect Ratio</label>
+            <select id="aspectRatio">
+              <option value="none">Original</option>
+              <option value="16/9">16:9 (Landscape)</option>
+              <option value="9/16">9:16 (Portrait / Reels)</option>
+              <option value="1/1">1:1 (Square)</option>
+              <option value="4/3">4:3 (Classic)</option>
+              <option value="21/9">21:9 (Cinematic)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Text Overlay -->
+        <div class="control-section">
+          <h3 class="section-title">📝 Text Overlay</h3>
+          <div class="text-overlay-controls">
+            <input type="text" id="overlayText" placeholder="Enter overlay text…" class="text-input" />
+            <div class="text-options">
+              <div class="text-opt">
+                <label>Font Size</label>
+                <input type="number" id="fontSize" value="32" min="10" max="120" />
+              </div>
+              <div class="text-opt">
+                <label>Color</label>
+                <input type="color" id="fontColor" value="#ffffff" />
+              </div>
+              <div class="text-opt">
+                <label>Position</label>
+                <select id="textPosition">
+                  <option value="bottom">Bottom Center</option>
+                  <option value="top">Top Center</option>
+                  <option value="center">Center</option>
+                  <option value="topleft">Top Left</option>
+                  <option value="bottomleft">Bottom Left</option>
+                </select>
+              </div>
+              <div class="text-opt">
+                <label>BG Color</label>
+                <input type="color" id="textBg" value="#000000" />
+              </div>
+            </div>
+            <div class="text-opt-row">
+              <label>BG Opacity <span id="textBgOpacityVal">60</span>%</label>
+              <input type="range" id="textBgOpacity" min="0" max="100" value="60" />
+            </div>
+            <div class="text-opt-row">
+              <label>Font Style</label>
+              <select id="fontStyle">
+                <option value="normal">Normal</option>
+                <option value="bold">Bold</option>
+                <option value="italic">Italic</option>
+                <option value="bold italic">Bold Italic</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Speed & Audio -->
+        <div class="control-section">
+          <h3 class="section-title">⚡ Speed & Audio</h3>
+          <div class="speed-btns">
+            <button class="speed-btn" data-speed="0.25">0.25×</button>
+            <button class="speed-btn" data-speed="0.5">0.5×</button>
+            <button class="speed-btn" data-speed="0.75">0.75×</button>
+            <button class="speed-btn active" data-speed="1">1×</button>
+            <button class="speed-btn" data-speed="1.1">1.1×</button>
+            <button class="speed-btn" data-speed="1.25">1.25×</button>
+            <button class="speed-btn" data-speed="1.5">1.5×</button>
+            <button class="speed-btn" data-speed="2">2×</button>
+            <button class="speed-btn" data-speed="4">4×</button>
+          </div>
+          <div class="slider-row" style="margin-top:12px">
+            <label>Volume <span id="volumeVal">100</span>%</label>
+            <input type="range" id="volume" min="0" max="100" value="100" />
+          </div>
+          <button class="action-btn mute-btn" id="muteBtn" style="margin-top:8px">🔇 Mute</button>
+        </div>
+
+        <!-- Watermark -->
+        <div class="control-section">
+          <h3 class="section-title">🏷️ Watermark</h3>
+          <div class="text-overlay-controls">
+            <input type="text" id="watermarkText" placeholder="e.g. @yourusername or © 2026" class="text-input" />
+            <div class="text-options">
+              <div class="text-opt">
+                <label>Size</label>
+                <input type="number" id="wmSize" value="18" min="8" max="60" />
+              </div>
+              <div class="text-opt">
+                <label>Color</label>
+                <input type="color" id="wmColor" value="#ffffff" />
+              </div>
+              <div class="text-opt">
+                <label>Position</label>
+                <select id="wmPosition">
+                  <option value="bottomright">Bottom Right</option>
+                  <option value="bottomleft">Bottom Left</option>
+                  <option value="topright">Top Right</option>
+                  <option value="topleft">Top Left</option>
+                </select>
+              </div>
+              <div class="text-opt">
+                <label>Opacity <span id="wmOpacityVal">70</span>%</label>
+                <input type="range" id="wmOpacity" min="10" max="100" value="70" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div class="control-section export-section">
+          <h3 class="section-title">💾 Export</h3>
+          <div class="export-options">
+            <div class="export-opt">
+              <label>Format</label>
+              <select id="exportFormat">
+                <option value="video/webm">WebM (recommended)</option>
+                <option value="video/mp4">MP4</option>
+              </select>
+            </div>
+            <div class="export-opt">
+              <label>Quality</label>
+              <select id="exportQuality">
+                <option value="8000000">High (8 Mbps)</option>
+                <option value="4000000" selected>Medium (4 Mbps)</option>
+                <option value="1000000">Low (1 Mbps)</option>
+              </select>
+            </div>
+          </div>
+          <button class="export-btn" id="exportBtn">⬇ Export Video</button>
+          <div class="export-progress" id="exportProgress" style="display:none">
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+            <p id="progressText">Preparing…</p>
+          </div>
+          <a id="downloadLink" style="display:none"></a>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Feature Info Cards -->
+    <div class="feature-cards">
+      <div class="feature-card">
+        <div class="fc-icon">🔒</div>
+        <h3>100% Private</h3>
+        <p>Your video never leaves your device. All processing happens in your browser.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">🆓</div>
+        <h3>Completely Free</h3>
+        <p>No subscriptions, no watermarks (unless you add one), no account required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">📱</div>
+        <h3>Short Video Ready</h3>
+        <p>9:16 portrait mode, speed controls, text overlays — perfect for Reels & TikTok.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">⚡</div>
+        <h3>Instant Preview</h3>
+        <p>See filters, transforms, and text overlays live before exporting.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo-row"><img src="logo.svg" alt="Aditor" class="footer-logo" /></div>
+    <div class="footer-links">
+      <a href="index.html">📋 Directory</a>
+      <a href="editor.html">✂️ Editor</a>
+      <a href="chatbot.html">🤖 AI Chat</a>
+      <a href="contact.html">📬 Contact</a>
+    </div>
+    <p>© 2026 Aditor by <a href="contact.html" style="color:var(--text-dim)">Alman Sikder</a> · Free & Open Source</p>
+  </footer>
+
+  <script src="editor.js"></script>
+  <script>
+    document.getElementById('navHamburger').addEventListener('click', () => {
+      document.getElementById('navMobileMenu').classList.toggle('open');
+    });
+  </script>
+</body>
+</html>

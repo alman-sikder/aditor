@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact – Aditor</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="contact.css" />
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="navbar">
+    <a href="index.html" class="nav-logo"><img src="logo.svg" alt="Aditor Logo" /></a>
+    <div class="nav-links">
+      <a href="index.html" class="nav-link">📋 Directory</a>
+      <a href="editor.html" class="nav-link">✂️ Editor</a>
+      <a href="chatbot.html" class="nav-link">🤖 AI Chat</a>
+      <a href="contact.html" class="nav-link active">📬 Contact</a>
+    </div>
+    <button class="nav-hamburger" id="navHamburger" aria-label="Menu">☰</button>
+  </nav>
+  <div class="nav-mobile-menu" id="navMobileMenu">
+    <a href="index.html" class="nav-link">📋 Directory</a>
+    <a href="editor.html" class="nav-link">✂️ Editor</a>
+    <a href="chatbot.html" class="nav-link">🤖 AI Chat</a>
+    <a href="contact.html" class="nav-link active">📬 Contact</a>
+  </div>
+
+  <div class="contact-page">
+
+    <div class="contact-hero">
+      <img src="logo.svg" alt="Aditor" class="contact-logo" />
+      <h1>Get in Touch</h1>
+      <p>Have a question, suggestion, or want to collaborate? Reach out — I'd love to hear from you.</p>
+    </div>
+
+    <div class="contact-grid">
+
+      <!-- Creator Card -->
+      <div class="creator-card">
+        <div class="creator-avatar">AS</div>
+        <h2 class="creator-name">Alman Sikder</h2>
+        <p class="creator-title">Creator & Developer of Aditor</p>
+        <p class="creator-bio">
+          Passionate about AI, video technology, and building free tools for creators. Aditor is a personal project aimed at making AI video generation accessible to everyone.
+        </p>
+        <div class="creator-links">
+          <a href="mailto:antualmansikder3.1417@gmail.com" class="creator-link email-link">
+            <span class="link-icon">✉️</span>
+            <div>
+              <span class="link-label">Email</span>
+              <span class="link-value">antualmansikder3.1417@gmail.com</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="contact-form-card">
+        <h2>Send a Message</h2>
+        <p class="form-note">This form opens your email client with a pre-filled message.</p>
+        <form id="contactForm" class="contact-form">
+          <div class="form-group">
+            <label for="senderName">Your Name</label>
+            <input type="text" id="senderName" placeholder="e.g. Jane Doe" required />
+          </div>
+          <div class="form-group">
+            <label for="senderEmail">Your Email</label>
+            <input type="email" id="senderEmail" placeholder="you@example.com" required />
+          </div>
+          <div class="form-group">
+            <label for="subject">Subject</label>
+            <select id="subject">
+              <option value="General Inquiry">General Inquiry</option>
+              <option value="Bug Report">Bug Report</option>
+              <option value="Feature Request">Feature Request</option>
+              <option value="Collaboration">Collaboration</option>
+              <option value="Model Submission">Submit a Model</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="message">Message</label>
+            <textarea id="message" rows="5" placeholder="Write your message here…" required></textarea>
+          </div>
+          <button type="submit" class="submit-btn">📨 Send via Email</button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Info Cards -->
+    <div class="contact-info-cards">
+      <div class="info-card">
+        <div class="ic-icon">🤝</div>
+        <h3>Collaboration</h3>
+        <p>Interested in partnering, sponsoring, or contributing to Aditor? Let's talk.</p>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🐛</div>
+        <h3>Bug Reports</h3>
+        <p>Found a bug in the editor or chatbot? Report it and I'll fix it as soon as possible.</p>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">🎬</div>
+        <h3>Submit a Model</h3>
+        <p>Know an AI video model that should be listed? Send the details and I'll add it.</p>
+      </div>
+      <div class="info-card">
+        <div class="ic-icon">💡</div>
+        <h3>Feature Ideas</h3>
+        <p>Have an idea for a new editor feature or chatbot capability? I'd love to hear it.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <div class="footer-logo-row"><img src="logo.svg" alt="Aditor" class="footer-logo" /></div>
+    <div class="footer-links">
+      <a href="index.html">📋 Directory</a>
+      <a href="editor.html">✂️ Editor</a>
+      <a href="chatbot.html">🤖 AI Chat</a>
+      <a href="contact.html">📬 Contact</a>
+    </div>
+    <p>© 2026 Aditor by Alman Sikder · Free & Open Source</p>
+  </footer>
+
+  <script>
+    document.getElementById('navHamburger').addEventListener('click', () => {
+      document.getElementById('navMobileMenu').classList.toggle('open');
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('senderName').value;
+      const email = document.getElementById('senderEmail').value;
+      const subject = document.getElementById('subject').value;
+      const msg = document.getElementById('message').value;
+      const body = encodeURIComponent(`Hi Alman,\n\nMy name is ${name} (${email}).\n\n${msg}\n\nBest regards,\n${name}`);
+      const subjectEnc = encodeURIComponent(`[Aditor] ${subject}`);
+      window.location.href = `mailto:antualmansikder3.1417@gmail.com?subject=${subjectEnc}&body=${body}`;
+    });
+  </script>
+</body>
+</html>
