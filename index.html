@@ -7,8 +7,12 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-
-  <!-- ── Navigation ── -->
+  <!-- Auto-redirect to editor after showing a brief message -->
+  <div style="display:flex;justify-content:center;align-items:center;height:100vh;flex-direction:column;font-family:sans-serif;background:var(--bg);color:var(--text);">
+    <h1>✂️ Aditor — Browser Video Editor</h1>
+    <p>Loading editor...</p>
+    <script>setTimeout(() => window.location.href = 'editor.html', 1500);</script>
+  </div>
   <nav class="navbar">
     <a href="index.html" class="nav-logo">
       <img src="logo.svg" alt="Aditor Logo" />

@@ -11,7 +11,7 @@
 
   <!-- ── Navigation ── -->
   <nav class="navbar">
-    <a href="index.html" class="nav-logo"><img src="logo.svg" alt="Aditor Logo" /></a>
+    <a href="editor.html" class="nav-logo"><img src="logo.svg" alt="Aditor Logo" /></a>
     <div class="nav-links">
       <a href="index.html" class="nav-link">📋 Directory</a>
       <a href="editor.html" class="nav-link active">✂️ Editor</a>
@@ -100,6 +100,16 @@
             <button class="filter-preset" data-filter="drop-shadow(4px 4px 8px #7c3aed)">Glow</button>
             <button class="filter-preset" data-filter="saturate(0%) brightness(110%) contrast(120%)">Matte</button>
             <button class="filter-preset" data-filter="hue-rotate(180deg) saturate(150%)">Neon</button>
+            <button class="filter-preset" data-filter="sepia(50%) contrast(110%)">Vintage</button>
+            <button class="filter-preset" data-filter="contrast(140%) saturate(110%)">Dramatic</button>
+            <button class="filter-preset" data-filter="brightness(110%) contrast(90%) saturate(90%)">Soft</button>
+            <button class="filter-preset" data-filter="hue-rotate(30deg) saturate(120%)">Warm</button>
+            <button class="filter-preset" data-filter="hue-rotate(180deg) saturate(80%)">Cool</button>
+            <button class="filter-preset" data-filter="contrast(150%) brightness(100%)">High Contrast</button>
+            <button class="filter-preset" data-filter="brightness(120%) saturate(150%)">Vibrant</button>
+            <button class="filter-preset" data-filter="grayscale(30%) sepia(20%)">Faded</button>
+            <button class="filter-preset" data-filter="brightness(90%) contrast(120%)">Moody</button>
+            <button class="filter-preset" data-filter="saturate(200%) hue-rotate(-30deg)">Retro Pop</button>
           </div>
         </div>
 
@@ -162,6 +172,30 @@
           </div>
         </div>
 
+        <!-- Crop -->
+        <div class="control-section">
+          <h3 class="section-title">✂️ Crop</h3>
+          <div class="crop-inputs">
+            <div class="crop-field">
+              <label>X</label>
+              <input type="number" id="cropX" value="0" min="0" />
+            </div>
+            <div class="crop-field">
+              <label>Y</label>
+              <input type="number" id="cropY" value="0" min="0" />
+            </div>
+            <div class="crop-field">
+              <label>Width</label>
+              <input type="number" id="cropW" value="" placeholder="auto" />
+            </div>
+            <div class="crop-field">
+              <label>Height</label>
+              <input type="number" id="cropH" value="" placeholder="auto" />
+            </div>
+          </div>
+          <button class="reset-btn" id="resetCrop">↺ Reset Crop</button>
+        </div>
+
         <!-- Text Overlay -->
         <div class="control-section">
           <h3 class="section-title">📝 Text Overlay</h3>
@@ -214,6 +248,7 @@
             <button class="speed-btn" data-speed="0.25">0.25×</button>
             <button class="speed-btn" data-speed="0.5">0.5×</button>
             <button class="speed-btn" data-speed="0.75">0.75×</button>
+            <button class="speed-btn" data-speed="0.99">0.99×</button>
             <button class="speed-btn active" data-speed="1">1×</button>
             <button class="speed-btn" data-speed="1.1">1.1×</button>
             <button class="speed-btn" data-speed="1.25">1.25×</button>
@@ -226,6 +261,25 @@
             <input type="range" id="volume" min="0" max="100" value="100" />
           </div>
           <button class="action-btn mute-btn" id="muteBtn" style="margin-top:8px">🔇 Mute</button>
+        </div>
+
+        <!-- Reverse Playback -->
+        <div class="control-section">
+          <h3 class="section-title">🔄 Reverse</h3>
+          <button class="action-btn" id="reverseBtn">⏪ Reverse Video</button>
+          <p class="section-note">Plays video backwards. Won't affect export unless specifically applied.</p>
+        </div>
+
+        <!-- Merge Videos -->
+        <div class="control-section">
+          <h3 class="section-title">🎞️ Merge Videos</h3>
+          <div class="merge-zone" id="mergeZone">
+            <p>Drop additional video files here to merge</p>
+            <input type="file" id="mergeInput" accept="video/*" multiple hidden />
+            <button class="action-btn" id="mergeBtn">+ Add Video</button>
+          </div>
+          <div class="merge-list" id="mergeList"></div>
+          <button class="action-btn" id="applyMerge" style="display:none">▶ Preview Merge</button>
         </div>
 
         <!-- Watermark -->
@@ -257,6 +311,162 @@
               </div>
             </div>
           </div>
+        </div>
+
+        <!-- Audio/Background Music -->
+        <div class="control-section">
+          <h3 class="section-title">🎵 Background Music</h3>
+          <div class="audio-upload">
+            <input type="file" id="audioInput" accept="audio/*" hidden />
+            <button class="action-btn" id="audioUploadBtn">🎧 Add Audio File</button>
+            <span id="audioFileName"></span>
+          </div>
+          <div class="slider-row">
+            <label>Music Volume <span id="musicVolVal">50</span>%</label>
+            <input type="range" id="musicVolume" min="0" max="100" value="50" />
+          </div>
+          <div class="slider-row">
+            <label>Original Audio <span id="origVolVal">100</span>%</label>
+            <input type="range" id="origVolume" min="0" max="100" value="100" />
+          </div>
+          <button class="reset-btn" id="removeAudio">✕ Remove Audio</button>
+        </div>
+
+        <!-- Subtitles/Captions -->
+        <div class="control-section">
+          <h3 class="section-title">📄 Subtitles</h3>
+          <div class="subtitle-controls">
+            <textarea id="subtitleText" placeholder="Enter subtitles (one line per timestamp)...&#10;Example:&#10;0-3: Hello everyone!&#10;3-6: Welcome to my video" rows="4"></textarea>
+            <div class="subtitle-options">
+              <div class="text-opt">
+                <label>Font Size</label>
+                <input type="number" id="subFontSize" value="24" min="12" max="72" />
+              </div>
+              <div class="text-opt">
+                <label>Color</label>
+                <input type="color" id="subColor" value="#ffffff" />
+              </div>
+              <div class="text-opt">
+                <label>Position</label>
+                <select id="subPosition">
+                  <option value="bottom">Bottom</option>
+                  <option value="top">Top</option>
+                  <option value="center">Center</option>
+                </select>
+              </div>
+              <div class="text-opt">
+                <label>BG Color</label>
+                <input type="color" id="subBgColor" value="#000000" />
+              </div>
+            </div>
+            <div class="text-opt-row">
+              <label>BG Opacity <span id="subBgOpacityVal">80</span>%</label>
+              <input type="range" id="subBgOpacity" min="0" max="100" value="80" />
+            </div>
+          </div>
+          <button class="action-btn" id="generateSubsBtn">🤖 Auto-Generate Subtitles</button>
+        </div>
+
+        <!-- AI Title & Description Generator -->
+        <div class="control-section">
+          <h3 class="section-title">🤖 AI Title & Description</h3>
+          <div class="ai-gen-controls">
+            <button class="action-btn" id="generateTitleBtn">✨ Generate Title</button>
+            <button class="action-btn" id="generateDescBtn">✨ Generate Description</button>
+            <div class="ai-output">
+              <label>Generated Title:</label>
+              <input type="text" id="aiTitle" placeholder="AI-generated title will appear here..." />
+              <label>Generated Description:</label>
+              <textarea id="aiDescription" placeholder="AI-generated description will appear here..." rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Voiceover (TTS) -->
+        <div class="control-section">
+          <h3 class="section-title">🎤 Voiceover (Text-to-Speech)</h3>
+          <div class="tts-controls">
+            <textarea id="ttsText" placeholder="Enter text to convert to speech..." rows="3"></textarea>
+            <div class="tts-options">
+              <div class="text-opt">
+                <label>Voice</label>
+                <select id="ttsVoice">
+                  <option value="default">Default</option>
+                </select>
+              </div>
+              <div class="text-opt">
+                <label>Speed</label>
+                <select id="ttsSpeed">
+                  <option value="0.75">Slow</option>
+                  <option value="1" selected>Normal</option>
+                  <option value="1.25">Fast</option>
+                </select>
+              </div>
+            </div>
+            <div class="tts-btns">
+              <button class="action-btn" id="playTtsBtn">▶ Preview Voiceover</button>
+              <button class="action-btn" id="applyTtsBtn">✅ Apply to Video</button>
+              <button class="reset-btn" id="removeTts">✕ Remove Voiceover</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transitions -->
+        <div class="control-section">
+          <h3 class="section-title">🔀 Transitions</h3>
+          <div class="transition-grid">
+            <button class="transition-btn" data-transition="none">None</button>
+            <button class="transition-btn" data-transition="fade">Fade</button>
+            <button class="transition-btn" data-transition="dissolve">Dissolve</button>
+            <button class="transition-btn" data-transition="wipe-left">Wipe ←</button>
+            <button class="transition-btn" data-transition="wipe-right">Wipe →</button>
+            <button class="transition-btn" data-transition="slide-up">Slide ↑</button>
+            <button class="transition-btn" data-transition="slide-down">Slide ↓</button>
+            <button class="transition-btn" data-transition="zoom-in">Zoom In</button>
+            <button class="transition-btn" data-transition="zoom-out">Zoom Out</button>
+          </div>
+          <div class="slider-row">
+            <label>Duration <span id="transitionDurVal">0.5</span>s</label>
+            <input type="range" id="transitionDuration" min="0.1" max="2" value="0.5" step="0.1" />
+          </div>
+        </div>
+
+        <!-- Effects (Zoom/Pan/Tilt/Shake) -->
+        <div class="control-section">
+          <h3 class="section-title">✨ Effects</h3>
+          <div class="effect-btns">
+            <button class="effect-btn" data-effect="none">None</button>
+            <button class="effect-btn" data-effect="zoom-in">Zoom In</button>
+            <button class="effect-btn" data-effect="zoom-out">Zoom Out</button>
+            <button class="effect-btn" data-effect="pan-left">Pan Left</button>
+            <button class="effect-btn" data-effect="pan-right">Pan Right</button>
+            <button class="effect-btn" data-effect="pan-up">Pan Up</button>
+            <button class="effect-btn" data-effect="pan-down">Pan Down</button>
+            <button class="effect-btn" data-effect="tilt">Tilt</button>
+            <button class="effect-btn" data-effect="shake">Shake</button>
+            <button class="effect-btn" data-effect="pulse">Pulse</button>
+            <button class="effect-btn" data-effect="spin">Spin</button>
+          </div>
+          <div class="slider-row">
+            <label>Effect Intensity <span id="effectIntVal">50</span>%</label>
+            <input type="range" id="effectIntensity" min="0" max="100" value="50" />
+          </div>
+        </div>
+
+        <!-- Meme/Template Library -->
+        <div class="control-section">
+          <h3 class="section-title">📸 Meme Templates</h3>
+          <div class="meme-grid">
+            <button class="meme-btn" data-template="none">None</button>
+            <button class="meme-btn" data-template="distracted">Distracted BF</button>
+            <button class="meme-btn" data-template="two-buttons">Two Buttons</button>
+            <button class="meme-btn" data-template="change-mind">Change My Mind</button>
+            <button class="meme-btn" data-template="drake">Drake Hotline Bling</button>
+            <button class="meme-btn" data-template="exit-ramp">Exit Ramp</button>
+            <button class="meme-btn" data-template="expanding-brain">Expanding Brain</button>
+            <button class="meme-btn" data-template="woman-yelling-cat">Woman Yelling at Cat</button>
+          </div>
+          <p class="section-note">Apply a meme overlay to your video</p>
         </div>
 
         <!-- Export -->

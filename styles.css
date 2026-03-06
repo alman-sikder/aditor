@@ -362,24 +362,28 @@ main {
 }
 
 .card-logo {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   flex-shrink: 0;
 }
 
 .company-logo {
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   object-fit: contain;
-  border-radius: 10px;
+  border-radius: 8px;
   background: rgba(255,255,255,0.05);
   padding: 4px;
 }
 
+.company-logo.logo-loaded {
+  opacity: 1;
+}
+
 .logo-fallback {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
   background: linear-gradient(135deg, var(--accent), #3b82f6);
   display: flex;
   align-items: center;

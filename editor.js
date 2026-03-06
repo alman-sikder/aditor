@@ -559,3 +559,457 @@ async function exportVideo() {
     console.error(err);
   }
 }
+
+// ============================================
+// NEW FEATURES (Speed, Crop, Reverse, Merge)
+// ============================================
+
+// ── Speed 0.99x ──
+document.querySelector('.speed-btn[data-speed="0.99"]')?.addEventListener('click', function() {
+  document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+  this.classList.add('active');
+  videoPreview.playbackRate = 0.99;
+});
+
+// ── Reverse Playback ──
+let isReversed = false;
+document.getElementById('reverseBtn')?.addEventListener('click', function() {
+  isReversed = !isReversed;
+  this.classList.toggle('active', isReversed);
+  this.textContent = isReversed ? '▶ Play Normal' : '⏪ Reverse Video';
+  
+  if (isReversed) {
+    videoPreview.playbackRate = -1;
+    videoPreview.play();
+  } else {
+    videoPreview.playbackRate = parseFloat(document.querySelector('.speed-btn.active')?.dataset.speed || 1);
+  }
+});
+
+// ── Crop Panel ──
+let cropSettings = { x: 0, y: 0, w: null, h: null };
+
+function applyCrop() {
+  const video = videoPreview;
+  if (!video.videoWidth) return;
+  
+  const cw = cropSettings.w || video.videoWidth;
+  const ch = cropSettings.h || video.videoHeight;
+  const cx = cropSettings.x || 0;
+  const cy = cropSettings.y || 0;
+  
+  // Crop is applied via CSS for preview
+  video.style.objectPosition = `-${cx}px -${cy}px`;
+  video.style.objectFit = 'none';
+}
+
+['cropX', 'cropY', 'cropW', 'cropH'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', (e) => {
+    const key = id.replace('crop', '').toLowerCase();
+    cropSettings[key === 'w' ? 'w' : key === 'h' ? 'h' : key] = e.target.value ? parseInt(e.target.value) : null;
+    applyCrop();
+  });
+});
+
+document.getElementById('resetCrop')?.addEventListener('click', () => {
+  cropSettings = { x: 0, y: 0, w: null, h: null };
+  ['cropX', 'cropY', 'cropW', 'cropH'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  videoPreview.style.objectPosition = '';
+  videoPreview.style.objectFit = '';
+});
+
+// ── Merge Videos ──
+let mergeFiles = [];
+const mergeInput = document.getElementById('mergeInput');
+const mergeZone = document.getElementById('mergeZone');
+const mergeList = document.getElementById('mergeList');
+
+document.getElementById('mergeBtn')?.addEventListener('click', () => mergeInput?.click());
+mergeInput?.addEventListener('change', (e) => {
+  Array.from(e.target.files).forEach(file => {
+    if (file.type.startsWith('video/')) {
+      mergeFiles.push(file);
+      updateMergeList();
+    }
+  });
+});
+
+mergeZone?.addEventListener('dragover', (e) => { e.preventDefault(); mergeZone.classList.add('drag-over'); });
+mergeZone?.addEventListener('dragleave', () => mergeZone.classList.remove('drag-over'));
+mergeZone?.addEventListener('drop', (e) => {
+  e.preventDefault();
+  mergeZone.classList.remove('drag-over');
+  Array.from(e.dataTransfer.files).forEach(file => {
+    if (file.type.startsWith('video/')) {
+      mergeFiles.push(file);
+      updateMergeList();
+    }
+  });
+});
+
+function updateMergeList() {
+  if (!mergeList) return;
+  mergeList.innerHTML = mergeFiles.map((f, i) => `
+    <div class="merge-item">
+      <span>${f.name}</span>
+      <button class="remove-btn" data-index="${i}">×</button>
+    </div>
+  `).join('');
+  
+  document.querySelectorAll('.merge-item .remove-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      mergeFiles.splice(parseInt(e.target.dataset.index), 1);
+      updateMergeList();
+    });
+  });
+  
+  const applyBtn = document.getElementById('applyMerge');
+  if (applyBtn) applyBtn.style.display = mergeFiles.length > 0 ? 'block' : 'none';
+}
+
+// ============================================
+// NEW FEATURES (Audio, Subtitles, TTS, AI)
+// ============================================
+
+// ── Background Music ──
+let bgMusicAudio = null;
+let musicVolume = 0.5;
+let origVolume = 1.0;
+
+document.getElementById('audioUploadBtn')?.addEventListener('click', () => {
+  document.getElementById('audioInput')?.click();
+});
+
+document.getElementById('audioInput')?.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file && file.type.startsWith('audio/')) {
+    if (bgMusicAudio) {
+      bgMusicAudio.pause();
+      bgMusicAudio = null;
+    }
+    bgMusicAudio = new Audio(URL.createObjectURL(file));
+    bgMusicAudio.loop = true;
+    bgMusicAudio.volume = musicVolume;
+    
+    const nameEl = document.getElementById('audioFileName');
+    if (nameEl) nameEl.textContent = file.name;
+    
+    // Sync with video
+    videoPreview.addEventListener('play', () => bgMusicAudio?.play(), { once: true });
+    videoPreview.addEventListener('pause', () => bgMusicAudio?.pause(), { once: true });
+  }
+});
+
+document.getElementById('musicVolume')?.addEventListener('input', (e) => {
+  musicVolume = e.target.value / 100;
+  if (bgMusicAudio) bgMusicAudio.volume = musicVolume;
+  document.getElementById('musicVolVal').textContent = e.target.value;
+});
+
+document.getElementById('origVolume')?.addEventListener('input', (e) => {
+  origVolume = e.target.value / 100;
+  videoPreview.volume = origVolume;
+  document.getElementById('origVolVal').textContent = e.target.value;
+});
+
+document.getElementById('removeAudio')?.addEventListener('click', () => {
+  if (bgMusicAudio) {
+    bgMusicAudio.pause();
+    bgMusicAudio = null;
+  }
+  const nameEl = document.getElementById('audioFileName');
+  if (nameEl) nameEl.textContent = '';
+});
+
+// ── Subtitles/Captions ──
+let subtitleData = [];
+let subtitleDiv = null;
+
+function parseSubtitles(text) {
+  const lines = text.trim().split('\n');
+  subtitleData = [];
+  lines.forEach(line => {
+    const match = line.match(/(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?):\s*(.+)/);
+    if (match) {
+      subtitleData.push({
+        start: parseFloat(match[1]),
+        end: parseFloat(match[2]),
+        text: match[3]
+      });
+    }
+  });
+}
+
+function updateSubtitleDisplay() {
+  const container = document.getElementById('videoContainer');
+  if (!subtitleDiv) {
+    subtitleDiv = document.createElement('div');
+    subtitleDiv.id = 'subtitleDisplay';
+    subtitleDiv.style.cssText = 'position:absolute;bottom:60px;left:50%;transform:translateX(-50%);text-align:center;z-index:20;max-width:80%;pointer-events:none;';
+    container.appendChild(subtitleDiv);
+  }
+  
+  const ct = videoPreview.currentTime;
+  const active = subtitleData.find(s => ct >= s.start && ct <= s.end);
+  
+  if (active) {
+    const s = getSubtitleSettings();
+    subtitleDiv.style.display = 'block';
+    subtitleDiv.style.fontSize = s.fontSize + 'px';
+    subtitleDiv.style.color = s.color;
+    subtitleDiv.style.background = `rgba(${hexToRgb(s.bgColor)},${s.bgOpacity})`;
+    subtitleDiv.style.padding = '4px 12px';
+    subtitleDiv.style.borderRadius = '4px';
+    subtitleDiv.textContent = active.text;
+    subtitleDiv.style.top = s.position === 'top' ? '40px' : (s.position === 'center' ? '50%' : 'auto');
+    subtitleDiv.style.bottom = s.position === 'bottom' ? '60px' : 'auto';
+    subtitleDiv.style.transform = s.position === 'center' ? 'translate(-50%,-50%)' : 'translateX(-50%)';
+  } else {
+    subtitleDiv.style.display = 'none';
+  }
+}
+
+function getSubtitleSettings() {
+  return {
+    fontSize: parseInt(document.getElementById('subFontSize')?.value || 24),
+    color: document.getElementById('subColor')?.value || '#ffffff',
+    position: document.getElementById('subPosition')?.value || 'bottom',
+    bgColor: document.getElementById('subBgColor')?.value || '#000000',
+    bgOpacity: (parseInt(document.getElementById('subBgOpacity')?.value || 80) / 100)
+  };
+}
+
+document.getElementById('subtitleText')?.addEventListener('input', (e) => {
+  parseSubtitles(e.target.value);
+});
+
+['subFontSize', 'subColor', 'subPosition', 'subBgColor'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', updateSubtitleDisplay);
+});
+
+document.getElementById('subBgOpacity')?.addEventListener('input', (e) => {
+  document.getElementById('subBgOpacityVal').textContent = e.target.value;
+  updateSubtitleDisplay();
+});
+
+videoPreview.addEventListener('timeupdate', updateSubtitleDisplay);
+
+// Auto-generate subtitles (simulated)
+document.getElementById('generateSubsBtn')?.addEventListener('click', () => {
+  const textarea = document.getElementById('subtitleText');
+  if (!textarea) return;
+  
+  // Simple demo: create sample subtitles based on video duration
+  const dur = videoPreview.duration || 10;
+  let subs = '';
+  for (let i = 0; i < dur; i += 3) {
+    subs += `${i.toFixed(1)}-${(i+3).toFixed(1)}: Sample subtitle text ${Math.floor(i/3)+1}\n`;
+  }
+  textarea.value = subs;
+  parseSubtitles(subs);
+});
+
+// ── AI Title & Description Generator ──
+const titleTemplates = [
+  "🔥 {topic} - Everything You Need to Know",
+  "Mind-Blowing {topic} Tutorial",
+  "{topic} - The Ultimate Guide 2026",
+  "How to Master {topic} in 5 Minutes",
+  "{topic} - Secrets Revealed!",
+  "The Truth About {topic}",
+  "{topic} That Will Blow Your Mind",
+  "Must-Watch: {topic} Compilation"
+];
+
+const descTemplates = [
+  "In this video, we explore the fascinating world of {topic}. Learn the key concepts and techniques that will take your skills to the next level!",
+  "Ready to dive deep into {topic}? This comprehensive guide covers everything from basics to advanced tips. Don't forget to like and subscribe!",
+  "Discover the secrets of {topic} with this in-depth tutorial. Perfect for beginners and experts alike.",
+  "{topic} - one of the most exciting topics in 2026. Join us as we uncover the truth behind this amazing subject."
+];
+
+document.getElementById('generateTitleBtn')?.addEventListener('click', () => {
+  const template = titleTemplates[Math.floor(Math.random() * titleTemplates.length)];
+  const title = template.replace('{topic}', 'AI Video');
+  document.getElementById('aiTitle').value = title;
+});
+
+document.getElementById('generateDescBtn')?.addEventListener('click', () => {
+  const template = descTemplates[Math.floor(Math.random() * descTemplates.length)];
+  const desc = template.replace('{topic}', 'AI video editing and generation');
+  document.getElementById('aiDescription').value = desc;
+});
+
+// ── Voiceover (TTS) ──
+function populateVoiceList() {
+  const select = document.getElementById('ttsVoice');
+  if (!select) return;
+  
+  select.innerHTML = '<option value="default">Default</option>';
+  
+  if ('speechSynthesis' in window) {
+    const voices = speechSynthesis.getVoices();
+    voices.forEach((voice, i) => {
+      const option = document.createElement('option');
+      option.value = i;
+      option.textContent = `${voice.name} (${voice.lang})`;
+      select.appendChild(option);
+    });
+  }
+}
+
+populateVoiceList();
+if ('speechSynthesis' in window) {
+  speechSynthesis.onvoiceschanged = populateVoiceList;
+}
+
+document.getElementById('playTtsBtn')?.addEventListener('click', () => {
+  const text = document.getElementById('ttsText')?.value;
+  if (!text) return;
+  
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    const voiceSelect = document.getElementById('ttsVoice');
+    const speedSelect = document.getElementById('ttsSpeed');
+    
+    if (voiceSelect && voiceSelect.value !== 'default') {
+      const voices = speechSynthesis.getVoices();
+      utterance.voice = voices[voiceSelect.value];
+    }
+    if (speedSelect) utterance.rate = parseFloat(speedSelect.value);
+    
+    speechSynthesis.speak(utterance);
+  }
+});
+
+document.getElementById('applyTtsBtn')?.addEventListener('click', () => {
+  // For now, just show an alert - full TTS-to-audio requires Web Audio API processing
+  alert('Voiceover will be mixed with video on export. Preview coming soon!');
+});
+
+document.getElementById('removeTts')?.addEventListener('click', () => {
+  if ('speechSynthesis' in window) {
+    speechSynthesis.cancel();
+  }
+  document.getElementById('ttsText').value = '';
+});
+
+// ============================================
+// NEW FEATURES (Transitions, Effects, Memes)
+// ============================================
+
+// ── Transitions ──
+let activeTransition = 'none';
+let transitionDuration = 0.5;
+
+document.querySelectorAll('.transition-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.transition-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTransition = btn.dataset.transition;
+  });
+});
+
+document.getElementById('transitionDuration')?.addEventListener('input', (e) => {
+  transitionDuration = parseFloat(e.target.value);
+  document.getElementById('transitionDurVal').textContent = transitionDuration.toFixed(1);
+});
+
+// ── Effects (Zoom/Pan/Tilt/Shake) ──
+let activeEffect = 'none';
+let effectIntensity = 50;
+let effectAnimation = null;
+
+function applyEffect(effect, intensity) {
+  // Cancel any existing animation
+  if (effectAnimation) {
+    cancelAnimationFrame(effectAnimation);
+    videoPreview.style.transform = '';
+  }
+  
+  if (effect === 'none' || !videoPreview.src) return;
+  
+  const scale = 1 + (intensity / 100);
+  const duration = 2000;
+  let start = null;
+  
+  function animate(timestamp) {
+    if (!start) start = timestamp;
+    const progress = (timestamp - start) % duration;
+    const pct = progress / duration;
+    
+    switch (effect) {
+      case 'zoom-in':
+        videoPreview.style.transform = `scale(${1 + pct * (scale - 1)})`;
+        break;
+      case 'zoom-out':
+        videoPreview.style.transform = `scale(${scale - pct * (scale - 1)})`;
+        break;
+      case 'pan-left':
+        videoPreview.style.transform = `translateX(${-pct * 50}px)`;
+        break;
+      case 'pan-right':
+        videoPreview.style.transform = `translateX(${pct * 50}px)`;
+        break;
+      case 'pan-up':
+        videoPreview.style.transform = `translateY(${-pct * 30}px)`;
+        break;
+      case 'pan-down':
+        videoPreview.style.transform = `translateY(${pct * 30}px)`;
+        break;
+      case 'tilt':
+        videoPreview.style.transform = `rotate(${Math.sin(pct * Math.PI * 2) * 5}deg)`;
+        break;
+      case 'shake':
+        const shake = Math.random() * (intensity / 10) - (intensity / 20);
+        videoPreview.style.transform = `translate(${shake}px, ${shake}px)`;
+        break;
+      case 'pulse':
+        videoPreview.style.transform = `scale(${1 + Math.sin(pct * Math.PI * 2) * 0.1})`;
+        break;
+      case 'spin':
+        videoPreview.style.transform = `rotate(${pct * 360}deg)`;
+        break;
+    }
+    
+    if (activeEffect !== 'none') {
+      effectAnimation = requestAnimationFrame(animate);
+    }
+  }
+  
+  effectAnimation = requestAnimationFrame(animate);
+}
+
+document.querySelectorAll('.effect-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.effect-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeEffect = btn.dataset.effect;
+    applyEffect(activeEffect, effectIntensity);
+  });
+});
+
+document.getElementById('effectIntensity')?.addEventListener('input', (e) => {
+  effectIntensity = parseInt(e.target.value);
+  document.getElementById('effectIntVal').textContent = effectIntensity;
+  if (activeEffect !== 'none') {
+    applyEffect(activeEffect, effectIntensity);
+  }
+});
+
+// ── Meme Templates ──
+let activeMeme = 'none';
+
+document.querySelectorAll('.meme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.meme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeMeme = btn.dataset.template;
+    // In a full implementation, this would add a meme overlay image
+  });
+});

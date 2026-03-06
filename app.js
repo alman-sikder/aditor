@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
       ).join('');
 
       const logoHTML = m.logo
-        ? `<img src="${m.logo}" alt="${m.company} logo" class="company-logo" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><span class="logo-fallback" style="display:none">${m.logoFallback}</span>`
+        ? `<img src="${m.logo}" alt="${m.company} logo" class="company-logo" onload="this.classList.add('logo-loaded')" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><span class="logo-fallback" style="display:none">${m.logoFallback}</span>`
         : `<span class="logo-fallback">${m.logoFallback}</span>`;
 
       card.innerHTML = `

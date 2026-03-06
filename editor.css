@@ -595,6 +595,323 @@
   padding: 0 2px;
 }
 
+/* ── New Editor Panels ── */
+
+/* Reverse Section */
+#reverseBtn {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#reverseBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+}
+#reverseBtn.active {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+/* Crop Panel */
+.crop-inputs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.crop-field label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.crop-field input {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-size: 13px;
+}
+.crop-field input:focus {
+  outline: none;
+  border-color: var(--accent2);
+}
+
+/* Merge Videos */
+.merge-zone {
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 12px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.merge-zone.drag-over {
+  border-color: var(--accent2);
+  background: rgba(99, 102, 241, 0.1);
+}
+.merge-zone p {
+  color: var(--text-dim);
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.merge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.merge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.05);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.merge-item .remove-btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+
+/* Background Music */
+.audio-upload {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+#audioFileName {
+  color: var(--text-dim);
+  font-size: 12px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Subtitles */
+.subtitle-controls textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+.subtitle-controls textarea:focus {
+  outline: none;
+  border-color: var(--accent2);
+}
+.subtitle-options {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.subtitle-options .text-opt label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+
+/* AI Title & Description */
+.ai-gen-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.ai-gen-controls .action-btn {
+  width: 100%;
+}
+.ai-output {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ai-output label {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 500;
+}
+.ai-output input,
+.ai-output textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-size: 13px;
+}
+.ai-output textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Voiceover TTS */
+.tts-controls textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+.tts-controls textarea:focus {
+  outline: none;
+  border-color: var(--accent2);
+}
+.tts-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.tts-options .text-opt label {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}
+.tts-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.tts-btns .action-btn,
+.tts-btns .reset-btn {
+  flex: 1;
+  min-width: 100px;
+}
+
+/* Transitions */
+.transition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.transition-btn {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.transition-btn:hover {
+  border-color: var(--accent2);
+  background: rgba(99, 102, 241, 0.1);
+}
+.transition-btn.active {
+  background: var(--accent2);
+  color: white;
+  border-color: var(--accent2);
+}
+
+/* Effects */
+.effect-btns {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.effect-btn {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.effect-btn:hover {
+  border-color: var(--accent2);
+  background: rgba(99, 102, 241, 0.1);
+}
+.effect-btn.active {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  border-color: #f59e0b;
+}
+
+/* Meme Templates */
+.meme-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.meme-btn {
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+  transition: all 0.2s;
+}
+.meme-btn:hover {
+  border-color: #ec4899;
+  background: rgba(236, 72, 153, 0.1);
+}
+.meme-btn.active {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  color: white;
+  border-color: #ec4899;
+}
+
+/* Section notes */
+.section-note {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  font-style: italic;
+}
+
+/* Enhanced filter presets grid - allow more filters */
+.filter-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+.filter-grid .filter-preset {
+  padding: 8px 6px;
+  font-size: 11px;
+}
+
+/* Speed button enhancements */
+.speed-btn[data-speed="0.99"] {
+  font-weight: bold;
+  color: var(--accent2);
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .editor-workspace { grid-template-columns: 1fr; }
